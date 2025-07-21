@@ -1,0 +1,62 @@
+init.py
+\videos
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs and outputs
+*.log
+*.out
+
+# Python egg metadata
+*.egg-info/
+*.egg
+
+# Distribution / packaging
+build/
+dist/
+*.whl
+*.tar.gz
+
+# Test & coverage
+.coverage
+htmlcov/
+.tox/
+.cache/
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+
+# Environments and config
+.env
+.env.*
+
+# Notebook conversion
+*.nbconvert.ipynb
+
+# Local data
+*.sqlite3
+*.db
+*.bak
+
+# Ignore videos or large files (custom)
+videos/
