@@ -60,3 +60,4 @@ htmlcov/
 
 # Ignore videos or large files (custom)
 videos/
+yolo11n.pt
