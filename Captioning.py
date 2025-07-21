@@ -18,9 +18,10 @@ gen_kwargs = {
     "top_p": 0.95,
 }
 
-def predict_captions(images):
+def predict_captions(images, extra_info=None):
     """
     Accepts a list of PIL.Image objects, returns a list of generated captions.
+    Optionally takes extra_info (e.g., YOLO-detected object names) to guide captioning.
     """
     # Ensure all images are RGB
     processed_images = [img.convert("RGB") if img.mode != "RGB" else img for img in images]
@@ -31,7 +32,16 @@ def predict_captions(images):
     # Generate captions
     output_ids = model.generate(pixel_values, **gen_kwargs)
     captions = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
-    return [caption.strip() for caption in captions]
+    captions = [caption.strip() for caption in captions]
+
+    # Optionally append object info
+    if extra_info:
+        captions = [
+            f"{caption} (Detected: {detected})"
+            for caption, detected in zip(captions, extra_info)
+        ]
+
+    return captions
 
 def predict_from_paths(image_paths):
     """
