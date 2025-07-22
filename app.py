@@ -17,7 +17,7 @@ def find_working_camera():
     raise IOError("❌ No working camera found. Try plugging in a different webcam.")
 
 
-def live_caption_streamlit(every_n_frames=60, batch_size=4):
+def live_caption_streamlit(every_n_frames=15, batch_size=1):
     cam_index = find_working_camera()
     cap = cv2.VideoCapture(cam_index)
 
@@ -35,15 +35,12 @@ def live_caption_streamlit(every_n_frames=60, batch_size=4):
             st.error("Failed to read frame from camera.")
             break
 
-        annotated = frame
+        detected_objects, annotated = detect_objects_yolo(frame)
 
-        if frame_idx % every_n_frames == 0:
-            detected_objects, annotated = detect_objects_yolo(frame)
-
-            if detected_objects:
-                pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                imgs.append(pil_img)
-                meta_info.append(", ".join(detected_objects))
+        if frame_idx % every_n_frames == 0 and detected_objects:
+            pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            imgs.append(pil_img)
+            meta_info.append(", ".join(detected_objects))
 
         if len(imgs) == batch_size:
             try:
