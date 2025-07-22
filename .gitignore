@@ -61,3 +61,4 @@ htmlcov/
 # Ignore videos or large files (custom)
 videos/
 yolo11n.pt
+summaries/live_summaries.json

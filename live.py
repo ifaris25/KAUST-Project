@@ -1,10 +1,13 @@
 import cv2
 from PIL import Image
+from datetime import datetime
+import json
+import os
 from main import *
 from Yolo import detect_objects_yolo
+from LLMs import useCohere
 
 def find_working_camera():
-    """Try multiple camera indices to find one that works."""
     for index in range(5):
         cap = cv2.VideoCapture(index, cv2.CAP_AVFOUNDATION)
         if cap.isOpened():
@@ -24,8 +27,11 @@ def live_caption_camera(every_n_frames=60, batch_size=4):
 
     frame_idx = 0
     imgs, meta_info = [], []
-    last_caption = ""
+    captions_this_minute = {}
+    last_minute = datetime.now().replace(second=0, microsecond=0)
+    preds = []
 
+    os.makedirs("summaries", exist_ok=True)
     print("Live captioning started. Press 'q' to quit.")
 
     while True:
@@ -34,30 +40,47 @@ def live_caption_camera(every_n_frames=60, batch_size=4):
             print("Failed to read frame.")
             break
 
-        if frame_idx % every_n_frames == 0:
-            detected_objects, annotated = detect_objects_yolo(frame)
+        detected_objects, annotated = detect_objects_yolo(frame)
 
-            if detected_objects:
-                pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                imgs.append(pil_img)
-                meta_info.append(", ".join(detected_objects))
-            else:
-                annotated = frame
+        if frame_idx % every_n_frames == 0 and detected_objects:
+            pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            imgs.append(pil_img)
+            meta_info.append(", ".join(detected_objects))
 
         if len(imgs) == batch_size:
             try:
                 preds = predict_captions(imgs, extra_info=meta_info)
-                last_caption = preds[-1] if preds else ""
+                for i, pred in enumerate(preds):
+                    timestamp = datetime.now().strftime("%H:%M:%S")
+                    if timestamp not in captions_this_minute:
+                        captions_this_minute[timestamp] = []
+                    captions_this_minute[timestamp].append(pred)
             except Exception as e:
                 print("⚠️ Captioning error:", e)
-                last_caption = ""
+                preds = []
             imgs, meta_info = [], []
 
-        if last_caption:
-            cv2.putText(annotated, last_caption, (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
+        if preds:
+            cv2.putText(annotated, preds[-1], (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (255, 0, 0), 2, cv2.LINE_AA)
 
         cv2.imshow("🔴 Live Camera Captioning (YOLO boxes)", annotated)
+
+        current_minute = datetime.now().replace(second=0, microsecond=0)
+        if current_minute > last_minute and captions_this_minute:
+            try:
+                summary = useCohere(captions_this_minute)
+                log_entry = {
+                    "time": last_minute.strftime("%Y-%m-%d %H:%M"),
+                    "summary": summary
+                }
+                with open("summaries/live_summaries.json", "a") as f:
+                    f.write(json.dumps(log_entry) + "\n")
+                print(f"✅ Summary at {log_entry['time']}: {summary}")
+                captions_this_minute = {}
+                last_minute = current_minute
+            except Exception as e:
+                print("⚠️ Summarization error:", e)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             print("👋 Quitting...")
