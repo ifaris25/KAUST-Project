@@ -16,7 +16,7 @@ def detect_objects_yolo(frame):
         - List of detected class names (for captioning)
         - Annotated frame with bounding boxes drawn
     """
-    results = model(frame)[0]
+    results = model(frame,verbose=False)[0]
     annotated_frame = frame.copy()
 
     if results.boxes is None:
