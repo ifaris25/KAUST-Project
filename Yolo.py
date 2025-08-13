@@ -1,41 +1,51 @@
+from collections import Counter
+import cv2
 from ultralytics import YOLO
-from main import *
-# Load a pretrained detection model
-model = YOLO("yolo11n.pt")  # or any variant like yolo11s.pt, yolo11m.pt, etc.
 
-# Run inference on an image
+# Load a pretrained detection model once
+# You can swap to "yolo11s.pt" / "yolo11m.pt" if you need better accuracy
+model = YOLO("yolo11n.pt")
 
 
-# # Display predictions
-# results[0].show()
-
-def detect_objects_yolo(frame):
+def detect_objects_yolo(frame, conf: float = 0.25, iou: float = 0.5):
     """
     Run YOLO object detection on a frame.
+
     Returns:
-        - List of detected class names (for captioning)
-        - Annotated frame with bounding boxes drawn
+        raw_names: list[str]     -> class names for each detection (duplicates kept)
+        counts: Counter          -> counts per class name
+        annotated_frame: ndarray -> original frame with boxes/labels drawn
     """
-    results = model(frame,verbose=False)[0]
+    results = model(frame, verbose=False, conf=conf, iou=iou)[0]
     annotated_frame = frame.copy()
 
-    if results.boxes is None:
-        return [], annotated_frame
+    # Handle no detections
+    if results.boxes is None or len(results.boxes) == 0:
+        return [], Counter(), annotated_frame
 
     class_ids = results.boxes.cls.cpu().numpy().astype(int)
     confs = results.boxes.conf.cpu().numpy()
     boxes = results.boxes.xyxy.cpu().numpy()
-    names = results.names
+    names = results.names  # list/dict from ultralytics
 
-    for cls_id, conf, box in zip(class_ids, confs, boxes):
+    # Draw detections
+    for cls_id, c, box in zip(class_ids, confs, boxes):
         x1, y1, x2, y2 = map(int, box)
-        label = f"{names[cls_id]} {conf:.2f}"
+        label = f"{names[int(cls_id)]} {float(c):.2f}"
 
-        # Draw box
         cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        # Draw label
-        cv2.putText(annotated_frame, label, (x1, y1 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        cv2.putText(
+            annotated_frame,
+            label,
+            (x1, max(0, y1 - 10)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 0),
+            2,
+            cv2.LINE_AA,
+        )
 
-    class_names = list({names[c] for c in class_ids})
-    return class_names, annotated_frame
+    raw_names = [names[int(c)] for c in class_ids]
+    counts = Counter(raw_names)
+
+    return raw_names, counts, annotated_frame
