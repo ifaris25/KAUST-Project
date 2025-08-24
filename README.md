@@ -14,6 +14,18 @@ This project turns **live or recorded video into concise summaries** using objec
 
 ---
 
+## 🖼️ Demo
+
+### Web Interface
+<img width="1920" height="1080" alt="frontinterface" src="https://github.com/user-attachments/assets/3fd3b5b5-60ae-4da9-ac6a-0beb279a8351" />
+
+
+### System Flow
+<img width="551" height="1039" alt="system_arch" src="https://github.com/user-attachments/assets/568b7751-2a68-45e2-abfa-a8c6bd1f224b" />
+
+
+---
+
 ## 🛠️ Tech Stack
 - **Python 3.11**, PyTorch, OpenCV, Hugging Face, FastAPI  
 - Models: YOLOv11n, Florence-2-large, Cohere Command-R+  
