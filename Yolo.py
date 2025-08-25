@@ -4,7 +4,7 @@ from ultralytics import YOLO
 
 # Load a pretrained detection model once
 # You can swap to "yolo11s.pt" / "yolo11m.pt" if you need better accuracy
-model = YOLO("yolo11n.pt")
+model = YOLO("yolo11s.pt")
 
 
 def detect_objects_yolo(frame, conf: float = 0.25, iou: float = 0.5):
