@@ -16,13 +16,19 @@ This project turns **live or recorded video into concise summaries** using objec
 
 ## 🖼️ Demo
 
+### Sample video and captioning result
+#### Video
+![Kaust video 1](https://github.com/user-attachments/assets/e0241dac-4046-4d22-ac71-ff2f9e81d02e) 
+
+#### Result
+<img width="546" height="475" alt="image" src="https://github.com/user-attachments/assets/ae772521-d345-4efb-80ae-7d7c43a3b7d3" />
+
 ### Web Interface
 <img width="1920" height="1080" alt="frontinterface" src="https://github.com/user-attachments/assets/3fd3b5b5-60ae-4da9-ac6a-0beb279a8351" />
 
 
-### System Flow
+### Methodology
 <img width="551" height="1039" alt="system_arch" src="https://github.com/user-attachments/assets/568b7751-2a68-45e2-abfa-a8c6bd1f224b" />
-
 
 ---
 
