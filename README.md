@@ -68,7 +68,7 @@ Open that link in your browser to access the web interface.
 
 ## 👥 Team
 
-* Faris Alhammad – Leader & Programmer
+* Faris Alhammad – Leader & AI Engineer
 * Safwan Nabeel – Programmer & Researcher
 * Mishary Aldawood – Product Manager & Designer
 * Rayed Saidi – Hardware Engineer
