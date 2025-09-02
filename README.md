@@ -1,6 +1,6 @@
 # Real-time Video-to-Text Summarization
 
-This project turns **live or recorded video into concise summaries** using object detection, image captioning, and language models. It was developed at **King Abdullah University of Science and Technology (KAUST)**.
+This project turns **live or recorded video into concise summaries** using object detection, image captioning, and language models. It was developed at **King Abdullah University of Science and Technology (KAUST), as part of KAUST Academy AI Summer project 2025**.
 
 ---
 
